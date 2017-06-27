@@ -334,5 +334,42 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        best_action = (-1, -1)
+        max_value = float("-inf")
+        for action in game.get_legal_moves():
+            value = self.__min_value(game.forecast_move(action), depth - 1, alpha, beta)
+            alpha = max(alpha, value)
+            if value > max_value:
+                best_action = action
+                max_value = value
+        return best_action
+
+
+    def __max_value(self, game, depth, alpha, beta):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0:
+            return self.score(game, self)
+        value = float("-inf")
+        for action in game.get_legal_moves():
+            value = max(value, self.__min_value(game.forecast_move(action), depth - 1, alpha, beta))
+            if value >= beta:
+                return value
+            alpha = max(alpha, value)
+        return value
+
+
+    def __min_value(self, game, depth, alpha, beta):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0:
+            return self.score(game, self)
+        value = float("inf")
+        for action in game.get_legal_moves():
+            value = min(value, self.__max_value(game.forecast_move(action), depth - 1, alpha, beta))
+            if value <= alpha:
+                return value
+            beta = min(beta, value)
+        return value

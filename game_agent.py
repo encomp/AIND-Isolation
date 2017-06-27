@@ -34,7 +34,10 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return float(len(game.get_legal_moves(player)))
+    score_1 = float(len(game.get_legal_moves(player)))
+    score_2 = custom_score_2(game, player)
+    score_3 = custom_score_3(game, player)
+    return 0.2 * score_1 + 0.5 * score_2 + 0.3 * score_3
 
 
 def custom_score_2(game, player):
@@ -211,7 +214,12 @@ class MinimaxPlayer(IsolationPlayer):
 
         best_action = (-1, -1)
         max_value = float("-inf")
-        for action in game.get_legal_moves():
+
+        legal_moves = game.get_legal_moves()
+        if legal_moves:
+            best_action = legal_moves[random.randint(0, len(legal_moves) - 1)]
+
+        for action in legal_moves:
             value = self.__min_value(game.forecast_move(action), depth - 1)
             if value > max_value:
                 best_action = action
@@ -343,12 +351,19 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         best_action = (-1, -1)
         max_value = float("-inf")
-        for action in game.get_legal_moves():
+
+        legal_moves = game.get_legal_moves()
+        if legal_moves:
+            best_action = legal_moves[random.randint(0, len(legal_moves) - 1)]
+
+        for action in legal_moves:
             value = self.__min_value(game.forecast_move(action), depth - 1, alpha, beta)
-            alpha = max(alpha, value)
             if value > max_value:
                 best_action = action
                 max_value = value
+            if value >= beta:
+                return best_action
+            alpha = max(alpha, value)
         return best_action
 
 

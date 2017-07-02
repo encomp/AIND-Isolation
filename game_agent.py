@@ -3,6 +3,9 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
+import numpy
+
+from isolation.isolation import Board
 
 
 class SearchTimeout(Exception):
@@ -62,7 +65,7 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return float(len(game.get_legal_moves(player)) - len(game.get_legal_moves(game.get_opponent(player))))
+    return float(len(game.get_legal_moves(player)) - 2 * len(game.get_legal_moves(game.get_opponent(player))))
 
 
 def custom_score_3(game, player):
@@ -87,8 +90,15 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return float(len(game.get_legal_moves(player)) - 2 * len(game.get_legal_moves(game.get_opponent(player))))
-
+    player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    if Board.BLANK == player_location or Board.BLANK == opponent_location:
+        return float(len(game.get_legal_moves(player)) - len(game.get_legal_moves(game.get_opponent(player))))
+    else:
+        manhattan = 0
+        for num in numpy.subtract(player_location, opponent_location):
+            manhattan += numpy.abs(num)
+        return float(manhattan)
 
 class IsolationPlayer:
     """Base class for minimax and alphabeta agents -- this class is never

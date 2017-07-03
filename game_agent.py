@@ -37,10 +37,9 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    score_1 = float(len(game.get_legal_moves(player)))
     score_2 = custom_score_2(game, player)
     score_3 = custom_score_3(game, player)
-    return 0.2 * score_1 + 0.5 * score_2 + 0.3 * score_3
+    return 0.55 * score_2 + 0.45 * score_3
 
 
 def custom_score_2(game, player):
@@ -98,7 +97,8 @@ def custom_score_3(game, player):
         manhattan = 0
         for num in numpy.subtract(player_location, opponent_location):
             manhattan += numpy.abs(num)
-        return float(manhattan)
+        return float(
+            len(game.get_legal_moves(player)) - manhattan * len(game.get_legal_moves(game.get_opponent(player))))
 
 class IsolationPlayer:
     """Base class for minimax and alphabeta agents -- this class is never
@@ -236,7 +236,6 @@ class MinimaxPlayer(IsolationPlayer):
                 max_value = value
         return best_action
 
-
     def __max_value(self, game, depth):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
@@ -247,7 +246,6 @@ class MinimaxPlayer(IsolationPlayer):
         for action in game.get_legal_moves():
             value = max(value, self.__min_value(game.forecast_move(action), depth - 1))
         return value
-
 
     def __min_value(self, game, depth):
         if self.time_left() < self.TIMER_THRESHOLD:
@@ -309,7 +307,6 @@ class AlphaBetaPlayer(IsolationPlayer):
             return best_action
 
         return best_action
-
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -376,7 +373,6 @@ class AlphaBetaPlayer(IsolationPlayer):
             alpha = max(alpha, value)
         return best_action
 
-
     def __max_value(self, game, depth, alpha, beta):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
@@ -390,7 +386,6 @@ class AlphaBetaPlayer(IsolationPlayer):
                 return value
             alpha = max(alpha, value)
         return value
-
 
     def __min_value(self, game, depth, alpha, beta):
         if self.time_left() < self.TIMER_THRESHOLD:
